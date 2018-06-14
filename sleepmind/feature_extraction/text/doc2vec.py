@@ -16,7 +16,7 @@ class Doc2VecTransformer(BaseEstimator, TransformerMixin):
     Notes: https://cs.stanford.edu/~quocle/paragraph_vector.pdf
     """
     def __init__(self, model='PV-DBOW', word_embeddings=False, window=8,
-                 alpha=.025, min_alpha=.001, epochs=10, size=100, min_count=5,
+                 alpha=.025, min_alpha=.001, epochs=10, vector_size=100, min_count=5,
                  train=True, pretrained_model=None, n_jobs=1):
         """Instantiate Doc2VecTransformer object.
 
@@ -24,7 +24,7 @@ class Doc2VecTransformer(BaseEstimator, TransformerMixin):
             model (str): Either `PV-DBOW` or `PV-DM`. `PV-DM` considers word
                 position.
             word_embeddings (bool): Whether to create word embeddings.
-            size (int): Vector size.
+            vector_size (int): Vector size.
             min_count (int):
             alpha (float): Learning rate.
             min_alpha (float):
@@ -50,7 +50,7 @@ class Doc2VecTransformer(BaseEstimator, TransformerMixin):
         self.model = model
         self.word_embeddings = 1 if word_embeddings else 0
         self.n_jobs = n_jobs
-        self.size = size
+        self.vector_size = vector_size
         self.min_count = min_count
         self.window = window
         self.alpha = alpha
@@ -106,14 +106,14 @@ class Doc2VecTransformer(BaseEstimator, TransformerMixin):
             # train doc2vec
             self.clf = Doc2Vec(dm=self.model, dbow_words=self.word_embeddings,
                                alpha=self.alpha, min_alpha=self.min_alpha,
-                               size=self.size, window=self.window,
+                               vector_size=self.vector_size, window=self.window,
                                min_count=self.min_count, negative=5,
-                               iter=self.epochs, workers=self.n_jobs)
+                               epochs=self.epochs, workers=self.n_jobs)
             self.clf.build_vocab(train_corpus)
             logger.info('Starting to train Doc2Vec')
             self.clf.train(train_corpus, total_examples=self.clf.corpus_count,
                            start_alpha=self.alpha, end_alpha=self.min_alpha,
-                           epochs=self.clf.iter)
+                           epochs=self.clf.epochs)
             logger.info('Completed Doc2Vec training')
             self.clf.delete_temporary_training_data(keep_doctags_vectors=True,
                                                     keep_inference=True)
