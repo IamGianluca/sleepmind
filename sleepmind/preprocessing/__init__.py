@@ -1,2 +1,2 @@
-from .encoding import ModifiedLabelEncoder
+from .categorical_imputer import CategoricalImputer
 from .selector import Selector
