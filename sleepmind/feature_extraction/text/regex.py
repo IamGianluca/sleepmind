@@ -1,10 +1,11 @@
 import re
 
 import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
+
+from sleepmind.base import BaseTransformer
 
 
-class RegexExtractor(BaseEstimator, TransformerMixin):
+class RegexExtractor(BaseTransformer):
 
     def __init__(self, pattern, else_all=False):
         """Use regular expression to extract part of a string.
@@ -43,18 +44,12 @@ class RegexExtractor(BaseEstimator, TransformerMixin):
 
         return np.array(results)
 
-    def fit(self, X, y=None):
-        return self
 
-
-class RegexCounter:
+class RegexCounter(BaseTransformer):
     """Count the number of occurrences of a regular expression in a text."""
 
     def __init__(self, pattern=''):
         self.pattern = pattern
-
-    def fit(self, X, y=None):
-        return self
 
     def transform(self, X):
         results = []

@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
+
+from sleepmind.base import BaseTransformer
 
 
-class CategoricalImputer(BaseEstimator, TransformerMixin):
+class CategoricalImputer(BaseTransformer):
     STRATEGIES = ['most_frequent']
     MISSING_VALUES = ['NaN']
 

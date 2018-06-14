@@ -1,13 +1,11 @@
 import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
+
+from sleepmind.base import BaseTransformer
 
 
-class LengthExtractor(BaseEstimator, TransformerMixin):
+class LengthExtractor(BaseTransformer):
 
     @staticmethod
     def transform(X):
         result = [[len(variation[0])] for variation in X]
         return np.array(result)
-
-    def fit(self, X, y=None):
-        return self

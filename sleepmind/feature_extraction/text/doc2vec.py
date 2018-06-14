@@ -5,12 +5,13 @@ import numpy as np
 from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
-from sklearn.base import BaseEstimator, TransformerMixin
+
+from sleepmind.base import BaseTransformer
 
 logger = logging.getLogger(__name__)
 
 
-class Doc2VecTransformer(BaseEstimator, TransformerMixin):
+class Doc2VecTransformer(BaseTransformer):
     """Doc2Vec.
 
     Notes: https://cs.stanford.edu/~quocle/paragraph_vector.pdf

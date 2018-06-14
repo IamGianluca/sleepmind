@@ -2,24 +2,13 @@ import logging
 
 import numpy as np
 from scipy import sparse
-from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
+from sklearn.base import ClassifierMixin
 from sklearn.preprocessing import binarize
 
+from sleepmind.base import BaseTransformer
 from sleepmind.feature_extraction.utils import unsquash, squash
-from sleepmind.preprocessing import Selector
 
 logger = logging.getLogger(__name__)
-
-
-class BaseTransformer(BaseEstimator, TransformerMixin):
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X):
-        return X
-
-    def get_params(self, deep=True):
-        return dict()
 
 
 class ModelTransformer(BaseTransformer):
@@ -137,9 +126,8 @@ class Length(BaseTransformer):
         return dict(column=self.column)
 
     def transform(self, X):
-        col = Select(self.column).transform(X)
-        res = np.vectorize(len)(col)
-        res = res.astype(float)
+        col = X.reindex(self.column)
+        res = np.vectorize(len)(col).astype(float)
         return unsquash(res)
 
 

@@ -1,33 +1,24 @@
 import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
+from sleepmind.base import BaseTransformer
 
 
-class ArrayTransformer(BaseEstimator, TransformerMixin):
+class ArrayTransformer(BaseTransformer):
 
     def transform(self, X):
         return X.as_matrix()
 
-    def fit(self, X, y=None):
-        return self
 
-
-class Squeeze(BaseEstimator, TransformerMixin):
+class Squeeze(BaseTransformer):
     """Remove single-dimensional entries from the shape of an array."""
 
     @staticmethod
     def transform(X):
         return np.squeeze(np.asarray(X))
 
-    def fit(self, X, y=None):
-        return self
 
-
-class DenseTransformer(BaseEstimator, TransformerMixin):
+class DenseTransformer(BaseTransformer):
     """Transform sparse matrix to a dense one."""
 
     @staticmethod
     def transform(X):
         return X.todense()
-
-    def fit(self, X, y=None):
-        return self

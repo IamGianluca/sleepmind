@@ -2,9 +2,10 @@ import numpy as np
 import xgboost as xgb
 from sklearn.metrics import log_loss
 
+from sleepmind.base import BaseTransformer
 
-# TODO: use ClassifierMixin and BaseEstimator to DRY
-class XGBoostClassifier:
+
+class XGBoostClassifier(BaseTransformer):
     """XGBoost classifier."""
     def __init__(self, num_boost_round=10, **params):
         self.clf = None
