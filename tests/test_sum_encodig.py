@@ -47,5 +47,26 @@ def test_multiple_columns():
 
     # then
     assert_array_equal(
-        results, np.array([[2, 6], [2, 3], [7, 3], [7, 6], [7, 6]])
+        results, np.array([[2, 6], [2, 3], [7, 3], [7, 6], [7, 6]]))
+
+
+@pytest.mark.parametrize('strategy', [
+    'sum', 'mean', 'median', 'most_frequent'
+])
+def test_missing(strategy):
+    """Missing levels should be encoded as zeroes."""
+    # given
+    train = pd.DataFrame({'country': ['united states', 'greece', 'greece']})
+    target = [1, 2, 3]
+    encoder = SumEncoder(strategy=strategy)
+    encoder.fit(X=train.country, y=target)
+
+    # when
+    test = pd.DataFrame({'country': ['italy']})
+    result = encoder.transform(test)
+
+    # then
+    assert_array_equal(
+        result,
+        np.array([[0]])
     )

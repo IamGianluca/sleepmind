@@ -63,16 +63,15 @@ class SumEncoder(BaseTransformer):
             n_rows, n_cols = X.shape[0], 1
 
         values = []
-        # import ipdb; ipdb.set_trace()
         for row in range(n_rows):
             try:
                 new_row = [
-                    self.statistics[(col, item)]
+                    self.statistics.get((col, item), 0)
                     for col, item in enumerate(X[row, :])
                 ]
             except IndexError:
                 new_row = [
-                    self.statistics[(col, item)]
+                    self.statistics.get((col, item), 0)
                     for col, item in enumerate(X[row])
                 ]
             values.append(new_row)
