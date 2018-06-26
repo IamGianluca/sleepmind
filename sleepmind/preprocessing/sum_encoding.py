@@ -1,7 +1,4 @@
-from collections import (
-    defaultdict,
-    Counter
-)
+from collections import defaultdict, Counter
 
 import numpy as np
 import pandas as pd
@@ -14,8 +11,7 @@ def most_frequent(a):
 
 
 class SumEncoder(BaseTransformer):
-
-    def __init__(self, strategy='sum'):
+    def __init__(self, strategy="sum"):
         self.strategy = strategy
         self.statistics = {}
         self.col_names = None
@@ -27,9 +23,9 @@ class SumEncoder(BaseTransformer):
                 Shape (n_samples, n_features)
             y (array-like): Target vector. Shape (n_samples, )
         """
-        allowed_strategies = ['sum', 'mean', 'median', 'most_frequent']
+        allowed_strategies = ["sum", "mean", "median", "most_frequent"]
         if self.strategy not in allowed_strategies:
-            raise ValueError(f'Strategy {self.strategy} is not supported.')
+            raise ValueError(f"Strategy {self.strategy} is not supported.")
 
         if isinstance(X, pd.DataFrame):
             X = X.values
@@ -42,10 +38,10 @@ class SumEncoder(BaseTransformer):
                 storage[(col, item)].append(target)
 
         functions = {
-            'sum': np.nansum,
-            'mean': np.nanmean,
-            'median': np.nanmedian,
-            'most_frequent': most_frequent,
+            "sum": np.nansum,
+            "mean": np.nanmean,
+            "median": np.nanmedian,
+            "most_frequent": most_frequent,
         }
 
         for key, values in storage.items():
@@ -66,15 +62,18 @@ class SumEncoder(BaseTransformer):
         except ValueError:
             n_rows, n_cols = X.shape[0], 1
 
-
         values = []
         # import ipdb; ipdb.set_trace()
         for row in range(n_rows):
             try:
-                new_row = [self.statistics[(col, item)]
-                           for col, item in enumerate(X[row, :])]
+                new_row = [
+                    self.statistics[(col, item)]
+                    for col, item in enumerate(X[row, :])
+                ]
             except IndexError:
-                new_row = [self.statistics[(col, item)]
-                           for col, item in enumerate(X[row])]
+                new_row = [
+                    self.statistics[(col, item)]
+                    for col, item in enumerate(X[row])
+                ]
             values.append(new_row)
         return np.array(values).reshape(-1, n_cols)

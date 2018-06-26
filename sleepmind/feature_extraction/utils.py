@@ -21,4 +21,4 @@ def extract_json(text, fields):
     if not isinstance(fields, list):
         fields = [fields]
     obj = json.loads(text)
-    return ' '.join([obj.get(field) for field in fields if obj.get(field)])
+    return " ".join([obj.get(field) for field in fields if obj.get(field)])

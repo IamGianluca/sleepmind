@@ -18,6 +18,7 @@ class ModelTransformer(BaseTransformer):
     cluster index as new feature; or for use in a model stack (an estimator
     trained using as features the predictions of other models).
     """
+
     def __init__(self, model, probs=True):
         self.model = model
         self.probs = probs
@@ -43,6 +44,7 @@ class FeatureStack(BaseTransformer):
     the constructor. Not parallel. But useful for debugging when
     e.g. FeatureUnion doesn't work.
     """
+
     def __init__(self, transformer_list):
         self.transformer_list = transformer_list
 
@@ -55,15 +57,18 @@ class FeatureStack(BaseTransformer):
         return self
 
     def transform(self, X):
-        logger.info('Stacking models: {}'.format(str(self.transformer_list)))
+        logger.info("Stacking models: {}".format(str(self.transformer_list)))
         features = []
         for name, trans in self.transformer_list:
-            logger.info('Stack next step: {}'.format(name))
+            logger.info("Stack next step: {}".format(name))
             predictions = trans.transform(X)
             features.append(predictions)
-            logger.info('Completed stacking model {}: output type {} , '
-                        'output shape: {}'.format(name, type(predictions),
-                                                  predictions.shape))
+            logger.info(
+                "Completed stacking model {}: output type {} , "
+                "output shape: {}".format(
+                    name, type(predictions), predictions.shape
+                )
+            )
         issparse = [sparse.issparse(f) for f in features]
         if np.any(issparse):
             # convert to sparse if necessary, otherwise cannot be hstack'ed
@@ -72,7 +77,9 @@ class FeatureStack(BaseTransformer):
         else:
             features = np.column_stack(features)
 
-        logger.info('Completed stacking: output shape: {}'.format(features.shape))
+        logger.info(
+            "Completed stacking: output shape: {}".format(features.shape)
+        )
         return features
 
     def get_params(self, deep=True):
@@ -82,7 +89,7 @@ class FeatureStack(BaseTransformer):
             out = dict(self.transformer_list)
             for name, trans in self.transformer_list:
                 for key, value in trans.get_params(deep=True).iteritems():
-                    out['%s__%s' % (name, key)] = value
+                    out["%s__%s" % (name, key)] = value
             return out
 
 
@@ -103,15 +110,19 @@ class EnsembleBinaryClassifier(BaseTransformer, ClassifierMixin):
     def predict_proba(self, X):
         """Predict (weighted) probabilities """
         probs = np.average(X, axis=1, weights=self.weights)
-        return np.column_stack((1-probs, probs))
+        return np.column_stack((1 - probs, probs))
 
     def predict(self, X):
         """Predict class labels."""
-        if self.mode == 'average':
-            return binarize(self.predict_proba(X)[:,[1]], 0.5)
+        if self.mode == "average":
+            return binarize(self.predict_proba(X)[:, [1]], 0.5)
         else:
             res = binarize(X, 0.5)
-            return np.apply_along_axis(lambda x: np.bincount(x.astype(int), self.weights).argmax(), axis=1, arr=res)
+            return np.apply_along_axis(
+                lambda x: np.bincount(x.astype(int), self.weights).argmax(),
+                axis=1,
+                arr=res,
+            )
 
 
 class Length(BaseTransformer):
@@ -119,6 +130,7 @@ class Length(BaseTransformer):
 
     Notes: Assumes column of data type compatible with len function.
     """
+
     def __init__(self, column=0):
         self.column = column
 
@@ -177,7 +189,6 @@ class Cast(BaseTransformer):
 
 
 class TargetStatisticsEncoding(BaseTransformer):
-
     def __init__(self, frequencies):
         self.frequencies = frequencies
 

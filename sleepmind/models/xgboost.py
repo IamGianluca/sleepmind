@@ -7,17 +7,19 @@ from sleepmind.base import BaseTransformer
 
 class XGBoostClassifier(BaseTransformer):
     """XGBoost classifier."""
+
     def __init__(self, num_boost_round=10, **params):
         self.clf = None
         self.num_boost_round = num_boost_round
         self.params = params
-        self.params.update({'objective': 'multi:softprob'})
+        self.params.update({"objective": "multi:softprob"})
 
     def fit(self, X, y, num_boost_round=None):
         num_boost_round = num_boost_round or self.num_boost_round
-        dtrain = xgb.DMatrix(X, label=(y-1))
-        self.clf = xgb.train(params=self.params, dtrain=dtrain,
-                             num_boost_round=num_boost_round)
+        dtrain = xgb.DMatrix(X, label=(y - 1))
+        self.clf = xgb.train(
+            params=self.params, dtrain=dtrain, num_boost_round=num_boost_round
+        )
 
     def predict(self, X):
         predictions = self.predict_proba(X)
@@ -36,9 +38,9 @@ class XGBoostClassifier(BaseTransformer):
         return self.params
 
     def set_params(self, **params):
-        if 'num_boost_round' in params:
-            self.num_boost_round = params.pop('num_boost_round')
-        if 'objective' in params:
-            del params['objective']
+        if "num_boost_round" in params:
+            self.num_boost_round = params.pop("num_boost_round")
+        if "objective" in params:
+            del params["objective"]
         self.params.update(params)
         return self

@@ -3,7 +3,6 @@ from sleepmind.base import BaseTransformer
 
 
 class ArrayTransformer(BaseTransformer):
-
     def transform(self, X):
         return X.as_matrix()
 

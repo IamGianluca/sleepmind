@@ -6,7 +6,6 @@ from sleepmind.base import BaseTransformer
 
 
 class RegexExtractor(BaseTransformer):
-
     def __init__(self, pattern, else_all=False):
         """Use regular expression to extract part of a string.
 
@@ -48,7 +47,7 @@ class RegexExtractor(BaseTransformer):
 class RegexCounter(BaseTransformer):
     """Count the number of occurrences of a regular expression in a text."""
 
-    def __init__(self, pattern=''):
+    def __init__(self, pattern=""):
         self.pattern = pattern
 
     def transform(self, X):

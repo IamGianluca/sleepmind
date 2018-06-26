@@ -16,9 +16,21 @@ class Doc2VecTransformer(BaseTransformer):
 
     Notes: https://cs.stanford.edu/~quocle/paragraph_vector.pdf
     """
-    def __init__(self, model='PV-DBOW', word_embeddings=False, window=8,
-                 alpha=.025, min_alpha=.001, epochs=10, vector_size=100, min_count=5,
-                 train=True, pretrained_model=None, n_jobs=1):
+
+    def __init__(
+        self,
+        model="PV-DBOW",
+        word_embeddings=False,
+        window=8,
+        alpha=.025,
+        min_alpha=.001,
+        epochs=10,
+        vector_size=100,
+        min_count=5,
+        train=True,
+        pretrained_model=None,
+        n_jobs=1,
+    ):
         """Instantiate Doc2VecTransformer object.
 
         Args:
@@ -46,8 +58,10 @@ class Doc2VecTransformer(BaseTransformer):
                 parameters.
         """
         if train and pretrained_model:
-            raise ValueError('The argument `train` should be set to `False` '
-                             'if a pre-trained model should be used.')
+            raise ValueError(
+                "The argument `train` should be set to `False` "
+                "if a pre-trained model should be used."
+            )
         self.model = model
         self.word_embeddings = 1 if word_embeddings else 0
         self.n_jobs = n_jobs
@@ -69,12 +83,15 @@ class Doc2VecTransformer(BaseTransformer):
 
     @model.setter
     def model(self, value):
-        if value in [0, 1]:  # BUG: when instantiating the object in a pipeline and the passing it to cross_val_score
+        if value in [
+            0,
+            1,
+        ]:  # BUG: when instantiating the object in a pipeline and the passing it to cross_val_score
             self._model = value
             pass
-        elif value not in ['PV-DBOW', 'PV-DM']:
-            raise ValueError('`model` can be either `PV-DBOW` or `PV-DM`.')
-        elif value == 'PV-DBOW':
+        elif value not in ["PV-DBOW", "PV-DM"]:
+            raise ValueError("`model` can be either `PV-DBOW` or `PV-DM`.")
+        elif value == "PV-DBOW":
             self._model = 0
         else:
             self._model = 1
@@ -90,8 +107,9 @@ class Doc2VecTransformer(BaseTransformer):
 
         if not self.train:  # load pre-trained model
             if not os.path.exists(self.pretrained_model):
-                FileNotFoundError('Could not find {}'.format(
-                    self.pretrained_model))
+                FileNotFoundError(
+                    "Could not find {}".format(self.pretrained_model)
+                )
             self.clf = Doc2Vec.load(self.pretrained_model)
         results = [self.clf.infer_vector(doc) for doc in test_corpus]
         return np.array(results)
@@ -105,19 +123,31 @@ class Doc2VecTransformer(BaseTransformer):
             train_corpus = list(self._read_corpus(X))
 
             # train doc2vec
-            self.clf = Doc2Vec(dm=self.model, dbow_words=self.word_embeddings,
-                               alpha=self.alpha, min_alpha=self.min_alpha,
-                               vector_size=self.vector_size, window=self.window,
-                               min_count=self.min_count, negative=5,
-                               epochs=self.epochs, workers=self.n_jobs)
+            self.clf = Doc2Vec(
+                dm=self.model,
+                dbow_words=self.word_embeddings,
+                alpha=self.alpha,
+                min_alpha=self.min_alpha,
+                vector_size=self.vector_size,
+                window=self.window,
+                min_count=self.min_count,
+                negative=5,
+                epochs=self.epochs,
+                workers=self.n_jobs,
+            )
             self.clf.build_vocab(train_corpus)
-            logger.info('Starting to train Doc2Vec')
-            self.clf.train(train_corpus, total_examples=self.clf.corpus_count,
-                           start_alpha=self.alpha, end_alpha=self.min_alpha,
-                           epochs=self.clf.epochs)
-            logger.info('Completed Doc2Vec training')
-            self.clf.delete_temporary_training_data(keep_doctags_vectors=True,
-                                                    keep_inference=True)
+            logger.info("Starting to train Doc2Vec")
+            self.clf.train(
+                train_corpus,
+                total_examples=self.clf.corpus_count,
+                start_alpha=self.alpha,
+                end_alpha=self.min_alpha,
+                epochs=self.clf.epochs,
+            )
+            logger.info("Completed Doc2Vec training")
+            self.clf.delete_temporary_training_data(
+                keep_doctags_vectors=True, keep_inference=True
+            )
         return self
 
     @staticmethod
@@ -137,8 +167,9 @@ class Doc2VecTransformer(BaseTransformer):
                 if tokens_only:  # for test dataset
                     yield simple_preprocess(line)
                 else:  # for training data add tags
-                    yield TaggedDocument(words=simple_preprocess(line),
-                                         tags=[idx])
+                    yield TaggedDocument(
+                        words=simple_preprocess(line), tags=[idx]
+                    )
 
     def save(self, filename):
         self.clf.save(filename)
