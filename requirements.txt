@@ -1,5 +1,6 @@
 atomicwrites==1.1.5
 attrs==18.1.0
+backcall==0.1.0
 boto==2.48.0
 boto3==1.7.32
 botocore==1.10.32
@@ -7,22 +8,40 @@ bz2file==0.98
 certifi==2018.4.16
 chardet==3.0.4
 coverage==4.5.1
+Cython==0.28.3
+decorator==4.3.0
 docutils==0.14
 gensim==3.4.0
 idna==2.6
+ipdb==0.11
+ipython==6.4.0
+ipython-genutils==0.2.0
+jedi==0.12.0
 jmespath==0.9.3
 more-itertools==4.2.0
 numpy==1.14.3
+pandas==0.23.0
+parso==0.2.1
+pexpect==4.6.0
+pickleshare==0.7.4
 pluggy==0.6.0
+prompt-toolkit==1.0.15
+ptyprocess==0.5.2
 py==1.5.3
+Pygments==2.2.0
 pytest==3.6.0
 pytest-cov==2.5.1
 python-dateutil==2.7.3
+pytz==2018.4
 requests==2.18.4
 s3transfer==0.1.13
-scikit-learn==0.19.1
+-e git+https://github.com/scikit-learn/scikit-learn.git@a7e17117bb15eb3f51ebccc1bd53e42fcb4e6cd8#egg=scikit_learn
 scipy==1.1.0
+simplegeneric==0.8.1
 six==1.11.0
--e git+git@gitlab.com:IamGianluca/sleepmind.git@b7a4ad36773a935165b9a9dfa121352cd10181d2#egg=sleepmind
+-e git+git@gitlab.com:IamGianluca/sleepmind.git@1ed1458903f27443be7c736d28583d7730e27ea5#egg=sleepmind
 smart-open==1.5.7
+traitlets==4.3.2
 urllib3==1.22
+wcwidth==0.1.7
+xgboost==0.72
