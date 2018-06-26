@@ -13,6 +13,5 @@ setup(
     version='0.0.1',
     description='Collection of utilities for fast Machine Learning experimentation',
     long_description=long_description,
-    packages=find_packages(
-        exclude=['digit-recognizer', 'home-credit-default-risk', 'tests']),
+    packages=find_packages(exclude=['tests']),
 )

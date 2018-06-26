@@ -1,0 +1,15 @@
+image: python:latest
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - python -V
+  - pip install -r requirements.txt
+  - pip install pytest pytest-cov
+  - pip install -e .
+
+test:
+  script:
+  - make test
