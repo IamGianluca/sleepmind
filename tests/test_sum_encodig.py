@@ -1,72 +1,78 @@
 import numpy as np
 import pandas as pd
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal
 from sklearn.compose import make_column_transformer
+from sklearn.pipeline import make_pipeline
 
 from sleepmind.preprocessing import SumEncoder
 
 
-@pytest.mark.parametrize(
-    "strategy,expected",
-    [
-        ("sum", np.array([1, 6, 6, 6, 1]).reshape(-1, 1)),
-        ("mean", np.array([1, 2, 2, 2, 1]).reshape(-1, 1)),
-        ("median", np.array([1, 2, 2, 2, 1]).reshape(-1, 1)),
-        ("most_frequent", np.array([1, 1, 1, 1, 1]).reshape(-1, 1)),
-    ],
-)
-def test_sum_encoding(strategy, expected):
+def test_sum_encoding_fit_transform():
     # given
-    X = np.array(["a", "b", "b", "b", "a"])
-    y = np.array([1, 1, 2, 3, np.NaN])
+    train = pd.DataFrame({
+        'animal': ['dog', 'dog', 'cat', 'cat', 'cat'],
+        'label': [1, 0, 1, 1, 0],
+    })
+    transformer = SumEncoder().fit(X=train.animal, y=train.label)
 
     # when
-    transformer = SumEncoder(strategy=strategy).fit(X=X, y=y)
-    result = transformer.transform(X=X)
+    test = pd.DataFrame({
+        'animal': ['dog', 'cat', 'elephant']
+    })
+    result = transformer.transform(X=test.animal)
 
     # then
-    assert_array_equal(result, expected)
-
-
-def test_multiple_columns():
-    # given
-    data = pd.DataFrame(
-        {
-            "first": ["a", "a", "b", "b", "b"],
-            "second": ["dog", "cat", "cat", "dog", "dog"],
-            "target": [1, 1, 2, 2, 3],
-        }
-    )
-    preprocess = make_column_transformer((["first", "second"], SumEncoder()))
-
-    # when
-    results = preprocess.fit_transform(
-        X=data.drop("target", axis=1), y=data.target
-    )
-
-    # then
-    assert_array_equal(
-        results, np.array([[2, 6], [2, 3], [7, 3], [7, 6], [7, 6]]))
-
-
-@pytest.mark.parametrize('strategy', [
-    'sum', 'mean', 'median', 'most_frequent'
-])
-def test_missing(strategy):
-    """Missing levels should be encoded as zeroes."""
-    # given
-    train = pd.DataFrame({'country': ['united states', 'greece', 'greece']})
-    target = [1, 2, 3]
-    encoder = SumEncoder(strategy=strategy)
-    encoder.fit(X=train.country, y=target)
-
-    # when
-    test = pd.DataFrame({'country': ['italy']})
-    result = encoder.transform(test)
-
-    # then
-    assert_array_equal(
+    assert_array_almost_equal(
         result,
-        np.array([[0]])
+        np.array([[0.75], [1.3333], [1]]),
+        decimal=4,
+    )
+
+
+def test_sum_encoding_multiple_columns():
+    # given
+    train = pd.DataFrame({
+        'animal': ['dog', 'dog', 'cat', 'cat', 'cat'],
+        'age': ['old', 'young', 'middle', 'young', 'old'],
+        'label': [1, 0, 1, 1, 0],
+    })
+    transformer = SumEncoder().fit(
+        X=train.drop(['label'], axis=1),
+        y=train.label
+    )
+
+    # when
+    test = pd.DataFrame({
+        'animal': ['dog', 'cat', 'elephant'],
+        'age': ['old', 'young', 'infant'],
+    })
+    result = transformer.transform(X=test)
+
+    # then
+    assert_array_almost_equal(
+        result,
+        np.array([[0.75, 0.75], [1.3333, 0.75], [1, 1]]),
+        decimal=4,
+    )
+
+
+def test_sum_encoding_pipeline():
+    # given
+    train = pd.DataFrame({'animal': ['dog', 'dog', 'cat', 'cat', 'cat']})
+    label = pd.DataFrame({'label': [1, 0, 1, 1, 0]})
+    pipe = make_column_transformer(
+        (['animal'], make_pipeline(
+            SumEncoder())),
+        remainder='drop',
+    )
+
+    # when
+    result = pipe.fit_transform(X=train, y=label)
+
+    # then
+    assert_array_almost_equal(
+        result,
+        np.array([[0.75], [0.75], [1.3333], [1.3333], [1.3333]]),
+        decimal=4,
     )

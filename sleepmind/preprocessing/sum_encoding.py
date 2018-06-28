@@ -6,14 +6,10 @@ import pandas as pd
 from sleepmind.base import BaseTransformer
 
 
-def most_frequent(a):
-    return Counter(a).most_common()[0][0]
-
-
 class SumEncoder(BaseTransformer):
-    def __init__(self, strategy="sum"):
-        self.strategy = strategy
-        self.statistics = {}
+
+    def __init__(self):
+        self.encoding = {}
         self.col_names = None
 
     def fit(self, X, y):
@@ -23,30 +19,34 @@ class SumEncoder(BaseTransformer):
                 Shape (n_samples, n_features)
             y (array-like): Target vector. Shape (n_samples, )
         """
-        allowed_strategies = ["sum", "mean", "median", "most_frequent"]
-        if self.strategy not in allowed_strategies:
-            raise ValueError(f"Strategy {self.strategy} is not supported.")
-
-        if isinstance(X, pd.DataFrame):
+        if isinstance(X, (pd.DataFrame, pd.Series)):
             X = X.values
-        n_cols = X.shape[0]
+        if isinstance(y, (pd.DataFrame, pd.Series)):
+            y = y.values
+        try:
+            n_cols = X.shape[1]
+        except IndexError:
+            n_cols = 1
+            X = X.reshape(-1, n_cols)
+
         self.col_names = list(range(n_cols))
+        store = defaultdict(lambda: defaultdict(list))
+        for row, label in zip(X, y):
+            # if not n_cols > 1:
+                # row = [row]
+            for col, level in enumerate(row):
+                store[col][level].append(label)
 
-        storage = defaultdict(list)
-        for row, target in zip(X, y):
-            for col, item in enumerate(row):
-                storage[(col, item)].append(target)
-
-        functions = {
-            "sum": np.nansum,
-            "mean": np.nanmean,
-            "median": np.nanmedian,
-            "most_frequent": most_frequent,
-        }
-
-        for key, values in storage.items():
-            col, label = key
-            self.statistics[(col, label)] = functions[self.strategy](values)
+        self.encoding = defaultdict(lambda: defaultdict(list))
+        for col in self.col_names:
+            for level, labels in store[col].items():
+                numerator = np.nanmean(labels)
+                others = []
+                for other_level, other_labels in store[col].items():
+                    if other_level != level:
+                        others.extend(other_labels)
+                denominator = np.nanmean(others)
+                self.encoding[col][level] = numerator / denominator
         return self
 
     def transform(self, X):
@@ -66,13 +66,10 @@ class SumEncoder(BaseTransformer):
         for row in range(n_rows):
             try:
                 new_row = [
-                    self.statistics.get((col, item), 0)
-                    for col, item in enumerate(X[row, :])
+                    self.encoding[col].get(level, 1)
+                    for col, level in enumerate(X[row, :])
                 ]
-            except IndexError:
-                new_row = [
-                    self.statistics.get((col, item), 0)
-                    for col, item in enumerate(X[row])
-                ]
+            except ValueError:
+                new_row = [self.encoding[0].get(X[row], 1)]
             values.append(new_row)
         return np.array(values).reshape(-1, n_cols)
