@@ -10,8 +10,15 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="sleepmind",
-    version="0.0.1",
+    version="0.0.2",
     description="Collection of utilities for fast Machine Learning experimentation",
     long_description=long_description,
+    install_requires=[
+        'cython>=0.28.3',
+        'scipy>=1.1.0',
+        'scikit-learn>=0.19.0',
+        'numpy>=1.14.5',
+        'pandas>=0.23.1',
+    ],
     packages=find_packages(exclude=["tests"]),
 )

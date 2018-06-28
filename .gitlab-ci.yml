@@ -6,10 +6,7 @@ cache:
 
 before_script:
   - python -V
-  - pip install -r requirements.txt
-  - pip install pytest pytest-cov
-  - pip install -e .
 
 test:
   script:
-  - make test
+  - make gitlab_ci
