@@ -12,23 +12,24 @@ class XGBoostClassifier(BaseTransformer):
         self.clf = None
         self.num_boost_round = num_boost_round
         self.params = params
-        self.params.update({"objective": "multi:softprob"})
 
     def fit(self, X, y, num_boost_round=None):
         num_boost_round = num_boost_round or self.num_boost_round
-        dtrain = xgb.DMatrix(X, label=(y - 1))
+        dtrain = xgb.DMatrix(X, label=y)
         self.clf = xgb.train(
-            params=self.params, dtrain=dtrain, num_boost_round=num_boost_round
+            params=self.params,
+            dtrain=dtrain,
+            num_boost_round=num_boost_round,
         )
 
     def predict(self, X):
         predictions = self.predict_proba(X)
-        y_hat = np.argmax(predictions, axis=1)
-        return np.array(y_hat)
+        return np.argmax(predictions, axis=1)
 
     def predict_proba(self, X):
         dtest = xgb.DMatrix(X)
-        return self.clf.predict(dtest)
+        pos_lk = self.clf.predict(dtest)
+        return np.vstack([(1 - pos_lk, pos_lk)]).T
 
     def score(self, X, y):
         predictions = self.predict_proba(X)
@@ -40,7 +41,5 @@ class XGBoostClassifier(BaseTransformer):
     def set_params(self, **params):
         if "num_boost_round" in params:
             self.num_boost_round = params.pop("num_boost_round")
-        if "objective" in params:
-            del params["objective"]
         self.params.update(params)
         return self
