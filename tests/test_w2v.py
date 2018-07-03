@@ -20,14 +20,23 @@ def fake_pretrained_model(monkeypatch):
     return
 
 
-def test_w2v(fake_pretrained_model):
+def test_fitted(fake_pretrained_model):
     # given
-    new_data = np.array([['dog'], ['cat'], ['dog']])
+    new_data = np.array([['dog'], ['cat'], ['dog cat'], ['elephant']])
     encoder = Word2VecEncoder()
 
     # when
-    encoder.fit(X=new_data)
-    result = encoder.transform(X=new_data)
+    with pytest.raises(ValueError):
+        result = encoder.transform(X=new_data)
+
+
+def test_w2v(fake_pretrained_model):
+    # given
+    new_data = np.array([['dog'], ['cat'], ['dog cat'], ['elephant']])
+    encoder = Word2VecEncoder()
+
+    # when
+    result = encoder.fit_transform(X=new_data)
 
     # then
     assert_array_equal(
@@ -35,7 +44,8 @@ def test_w2v(fake_pretrained_model):
         np.array(
             [[1] * 300,
              [0] * 300,
-             [1] * 300]
+             [1] * 300,
+             [0.5] * 300]  # words not in the vocabulary should be the as the mean of the h
         )
     )
 
