@@ -1,12 +1,18 @@
 image: python:latest
 
+stages:
+  - test
+
+py3.6:
+  stage: test
+  image: python:3.6.6-jessie
+  before_script:
+  - python -V
+  - pip install pipenv --upgrade
+  - pipenv install --dev --skip-lock
+  script:
+  - make test
+
 cache:
   paths:
     - .cache/pip
-
-before_script:
-  - python -V
-
-test:
-  script:
-  - make gitlab_ci
