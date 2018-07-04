@@ -24,11 +24,11 @@ class Word2VecEncoder(BaseTransformer):
             n_rows, n_cols = X.shape[0], 1
 
         values = []
-        for row in range(n_rows):
+        for row_idx in range(n_rows):
             try:
-                new_row = [self.get_vector(word) for word in X[row, :]]
+                new_row = [self.get_vector(word) for word in X[row_idx, :]]
             except ValueError:
-                new_row = [self.get_vector(word) for word in X[row]]
+                new_row = [self.get_vector(word) for word in X[row_idx]]
             except KeyError:
                 pass
             values.append(new_row)
@@ -54,14 +54,15 @@ class Word2VecEncoder(BaseTransformer):
             n_rows, n_cols = X.shape[0], 1
 
         values = []
-        for row in range(n_rows):
+        for row_idx in range(n_rows):
             try:
-                new_row = [self.get_vector(word) for word in X[row, :]]
+                new_row = [self.get_vector(phrase) for phrase in X[row_idx, :]]
             except ValueError:
-                new_row = [self.get_vector(word) for word in X[row]]
+                container = [self.get_vector(phrase) for phrase in X[row_idx]]
+                new_row = [item for sub_list in container for item in sub_list]
             values.append(new_row)
 
-        return np.array(values).reshape(-1, self.vector_length)
+        return np.array(values).reshape(-1, self.vector_length * n_cols)
 
     def get_vector(self, phrase):
         words = phrase.split(' ')
@@ -72,5 +73,4 @@ class Word2VecEncoder(BaseTransformer):
             except KeyError:
                 if self.fitted:
                     v += self.unknown
-        return v
-
+        return v.tolist()

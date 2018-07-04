@@ -15,6 +15,8 @@ def fake_pretrained_model(monkeypatch):
         return {
             'cat': np.zeros(300),
             'dog': np.ones(300),
+            'male': np.array([5] * 300),
+            'female': np.array([-1]* 300),
         }
     monkeypatch.setattr(KeyedVectors, 'load_word2vec_format', mocked_return)
     return
@@ -29,6 +31,27 @@ def test_fitted(fake_pretrained_model):
     with pytest.raises(ValueError):
         result = encoder.transform(X=new_data)
 
+
+def test_w2v_multi_columns(fake_pretrained_model):
+    # given
+    new_data = pd.DataFrame({
+        'animal': ['dog', 'cat', 'dog'],
+        'gender': ['female', 'female', 'male'],
+    })
+    encoder = Word2VecEncoder()
+
+    # when
+    result = encoder.fit_transform(X=new_data)
+
+    # then
+    assert_array_equal(
+        result,
+        np.array(
+            [[1] * 300 + [-1] * 300,
+             [0] * 300 + [-1] * 300,
+             [1] * 300 + [5] * 300,]
+        )
+    )
 
 def test_w2v(fake_pretrained_model):
     # given
