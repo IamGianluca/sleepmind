@@ -8,6 +8,7 @@ py3.6:
   image: python:3.6.6-jessie
   before_script:
   - python -V
+  - pip install -U pip
   - pip install pipenv --upgrade
   - pipenv install --dev --skip-lock
   script:

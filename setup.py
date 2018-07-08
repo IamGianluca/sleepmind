@@ -19,6 +19,11 @@ setup(
         'scikit-learn>=0.19.0',
         'numpy>=1.14.5',
         'pandas>=0.23.1',
+        'xgboost>=0.72',
+        'gensim>=3.4.0',
+    ],
+    dependency_links=[
+        'git+ssh://git@github.com/scikit-learn/scikit-learn.git@5a9ce9fe3fe6cdf2574f0142e3f38698155f707a#egg=scikit-learn'
     ],
     packages=find_packages(exclude=["tests"]),
 )
