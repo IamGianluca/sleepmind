@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import xgboost as xgb
 from sklearn.metrics import log_loss
@@ -8,16 +10,19 @@ from sleepmind.base import BaseTransformer
 class XGBoostClassifier(BaseTransformer):
     """XGBoost classifier."""
 
-    def __init__(self, num_boost_round=10, **params):
+    def __init__(self, **params):
         self.clf = None
-        self.num_boost_round = num_boost_round
         self.params = params
 
-    def fit(self, X, y, num_boost_round=None):
-        num_boost_round = num_boost_round or self.num_boost_round
+    def fit(self, X, y):
+        params = copy.copy(self.params)
+        try:
+            num_boost_round = params.pop('num_boost_round')
+        except KeyError:
+            num_boost_round = 10
         dtrain = xgb.DMatrix(X, label=y)
         self.clf = xgb.train(
-            params=self.params,
+            params=params,
             dtrain=dtrain,
             num_boost_round=num_boost_round,
         )
@@ -39,7 +44,5 @@ class XGBoostClassifier(BaseTransformer):
         return self.params
 
     def set_params(self, **params):
-        if "num_boost_round" in params:
-            self.num_boost_round = params.pop("num_boost_round")
         self.params.update(params)
         return self

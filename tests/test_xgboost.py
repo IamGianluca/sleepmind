@@ -28,3 +28,28 @@ def test_xgboost():
 
     # then
     assert_array_equal(preds, np.ones(4))
+
+
+def test_get_params():
+    params = {
+        'num_boost_round': 15,
+        'max_depth': 2,
+        'eta': 1,
+        'silent': 1,
+        'objective': 'binary:logistic'
+    }
+    estimator = XGBoostClassifier(**params)
+    assert estimator.get_params() == params
+
+
+def test_set_params():
+    params = {
+        'num_boost_round': 15,
+        'max_depth': 2,
+        'eta': 1,
+        'silent': 1,
+        'objective': 'binary:logistic'
+    }
+    estimator = XGBoostClassifier()
+    estimator.set_params(**params)
+    assert estimator.get_params() == params
