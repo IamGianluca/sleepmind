@@ -1,4 +1,4 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import numpy as np
 import pandas as pd
@@ -30,14 +30,14 @@ class SumEncoder(BaseTransformer):
             X = X.reshape(-1, n_cols)
 
         self.col_names = list(range(n_cols))
-        store = defaultdict(lambda: defaultdict(list))
+        store = defaultdict(get_defaultdict_of_list)
         for row, label in zip(X, y):
             # if not n_cols > 1:
                 # row = [row]
             for col, level in enumerate(row):
                 store[col][level].append(label)
 
-        self.encoding = defaultdict(lambda: defaultdict(list))
+        self.encoding = defaultdict(get_defaultdict_of_list)
         for col in self.col_names:
             for level, labels in store[col].items():
                 numerator = np.nanmean(labels)
@@ -73,3 +73,7 @@ class SumEncoder(BaseTransformer):
                 new_row = [self.encoding[0].get(X[row], 1)]
             values.append(new_row)
         return np.array(values).reshape(-1, n_cols)
+
+
+def get_defaultdict_of_list():
+    return defaultdict(list)

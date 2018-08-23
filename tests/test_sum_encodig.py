@@ -1,3 +1,6 @@
+import pickle
+from io import BytesIO
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -74,5 +77,29 @@ def test_sum_encoding_pipeline():
     assert_array_almost_equal(
         result,
         np.array([[0.75], [0.75], [1.3333], [1.3333], [1.3333]]),
+        decimal=4,
+    )
+
+
+def test_sum_encoding_pickle():
+    # given
+    train = pd.DataFrame(data={
+        'animal': ['dog', 'dog', 'cat', 'cat', 'cat'],
+        'label': [1, 0, 1, 1, 0],
+    })
+    transformer = SumEncoder().fit(X=train.animal, y=train.label)
+
+    # when
+    pickle_file = BytesIO(pickle.dumps(obj=transformer))
+    unpickled_transformer = pickle.load(file=pickle_file)
+    test = pd.DataFrame(data={
+        'animal': ['dog', 'cat', 'elephant']
+    })
+    result = unpickled_transformer.transform(X=test.animal)
+
+    # then
+    assert_array_almost_equal(
+        result,
+        np.array([[0.75], [1.3333], [1]]),
         decimal=4,
     )
