@@ -2,10 +2,12 @@ language: python
 
 python:
     - '3.6'
-    - '3.7'
+
+before_install: 'sudo rm -f /etc/boto.cfg'
 
 install: 'pip install -r requirements.txt'
 
 script:
+    - make build
     - make build_w2v
-    - make tests
+    - make test
