@@ -31,7 +31,6 @@ s3transfer==0.1.13
 scikit-learn==0.20.0
 scipy==1.1.0
 six==1.11.0
--e git+git@github.com:IamGianluca/sleepmind.git@fd9976000327180e1f3710b18e7ab622753a8006#egg=sleepmind
 smart-open==1.7.1
 urllib3==1.24.1
 xgboost==0.81
