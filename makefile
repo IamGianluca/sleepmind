@@ -4,4 +4,4 @@ build_w2v:
 	gunzip GoogleNews-vectors-negative300.bin.gz
 
 test:
-	pipenv run pytest -svv --cov sleepmind
+	pytest -svv --cov sleepmind
