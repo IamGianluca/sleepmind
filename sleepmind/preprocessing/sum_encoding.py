@@ -39,14 +39,17 @@ class SumEncoder(BaseTransformer):
 
         self.encoding = defaultdict(get_defaultdict_of_list)
         for col in self.col_names:
-            for level, labels in store[col].items():
-                numerator = np.nanmean(labels)
+            for level, y in store[col].items():
+                numerator = np.nanmean(y)
                 others = []
-                for other_level, other_labels in store[col].items():
+                for other_level, other_y in store[col].items():
                     if other_level != level:
-                        others.extend(other_labels)
-                denominator = np.nanmean(others)
-                self.encoding[col][level] = numerator / denominator
+                        others.extend(other_y)
+                if others == []:  # cardinality 1
+                    self.encoding[col][level] = 1
+                else:
+                    denominator = np.nanmean(others)
+                    self.encoding[col][level] = numerator / denominator
         return self
 
     def transform(self, X):

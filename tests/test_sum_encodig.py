@@ -11,7 +11,29 @@ from sklearn.pipeline import make_pipeline
 from sleepmind.preprocessing import SumEncoder
 
 
-def test_sum_encoding_fit_transform():
+def test_one_level():
+    # given
+    train = pd.DataFrame({
+        'animal': ['dog', 'dog', 'dog'],
+        'label': [1, 0, 2],
+    })
+    transformer = SumEncoder().fit(X=train.animal, y=train.label)
+
+    # when
+    test = pd.DataFrame({
+        'animal': ['dog', 'dog', 'dog']
+    })
+    result = transformer.transform(X=test.animal)
+
+    # then
+    assert_array_almost_equal(
+        result,
+        np.array([[1], [1], [1]]),
+        decimal=4,
+    )
+
+
+def test_sum_encoding_fit_transform_and_new_level():
     # given
     train = pd.DataFrame({
         'animal': ['dog', 'dog', 'cat', 'cat', 'cat'],
