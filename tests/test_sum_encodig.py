@@ -33,6 +33,16 @@ def test_one_level():
     )
 
 
+def test_nan_y():
+    # given
+    train = pd.DataFrame({
+        'animal': ['dog', 'dog', 'dog'],
+        'label': [1, 0, np.NaN],
+    })
+    with pytest.raises(ValueError):
+        SumEncoder().fit(X=train.animal, y=train.label)
+
+
 def test_sum_encoding_fit_transform_and_new_level():
     # given
     train = pd.DataFrame({
