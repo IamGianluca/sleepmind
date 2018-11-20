@@ -1,4 +1,4 @@
-![coverage](https://gitlab.com/iamgianluca/sleepmind/badges/<branch>/coverage.svg)
+![coverage](https://travis-ci.org/IamGianluca/sleepmind.svg?branch=master)
 
 
 ### SleepMind
