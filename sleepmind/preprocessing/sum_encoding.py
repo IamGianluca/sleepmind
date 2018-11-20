@@ -29,22 +29,23 @@ class SumEncoder(BaseTransformer):
             n_cols = 1
             X = X.reshape(-1, n_cols)
 
+        if any(np.isnan(y)):
+            raise ValueError('Response variable contains `np.NaN`')
+
         self.col_names = list(range(n_cols))
         store = defaultdict(get_defaultdict_of_list)
         for row, label in zip(X, y):
-            # if not n_cols > 1:
-                # row = [row]
             for col, level in enumerate(row):
                 store[col][level].append(label)
 
         self.encoding = defaultdict(get_defaultdict_of_list)
         for col in self.col_names:
-            for level, y in store[col].items():
-                numerator = np.nanmean(y)
+            for level, ys in store[col].items():
+                numerator = np.mean(ys)
                 others = []
-                for other_level, other_y in store[col].items():
+                for other_level, other_ys in store[col].items():
                     if other_level != level:
-                        others.extend(other_y)
+                        others.extend(other_ys)
                 if others == []:  # cardinality 1
                     self.encoding[col][level] = 1
                 else:
