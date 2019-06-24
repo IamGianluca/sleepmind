@@ -9,3 +9,6 @@ __pycache__
 
 # pre-trained gensim models
 *.bin
+
+# python virtualenv
+.python-version

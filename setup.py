@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="sleepmind",
-    version="0.0.3",
+    version="1.0.0",
     description="Collection of utilities for fast Machine Learning experimentation",
     long_description=long_description,
     install_requires=[
